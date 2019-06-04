@@ -15,8 +15,8 @@ variable location {
 variable instance_size {
 	description = "Size of the instance"
 	#default = "Standard_B2ms"
-	#default = "Standard_F64s_v2"
-	default = "Standard_F4s_v2"
+	default = "Standard_F64s_v2"
+	#default = "Standard_F8s_v2"
 	#default = "Standard_H16r"
 	#default = "Standard_Hc44rs"
 	#default = "Standard_Hb60rs"
@@ -33,8 +33,6 @@ variable accelerated {
 						#"Standard_Hb60rs"
 					]
 }
-
-
 
 resource "azurerm_resource_group" "RG" {  
 	name     = "HPC-${upper(var.app_name)}-RG"
@@ -114,22 +112,23 @@ resource "azurerm_virtual_machine" "vm" {
     version   = "latest"
   }
 
-
 	storage_os_disk {
-		name              = "osdisk${count.index+1}"
+		name              = "datadisk${count.index+1}"
 		caching           = "ReadWrite"
 		create_option     = "FromImage"
 		managed_disk_type = "StandardSSD_LRS"
+		#managed_disk_type = "Premium_LRS"
+		#disk_size_gb		= 200
 	}
 
 	# Optional data disks
-	#storage_data_disk {
-	#name              = "datadisk_new_${count.index}"
-	#managed_disk_type = "Standard_LRS"
-	#create_option     = "Empty"
-	#lun               = 0
-	#disk_size_gb      = "256"
-	#}
+	storage_data_disk {
+	name              = "datadisk_${count.index}"
+	managed_disk_type = "Premium_LRS"
+	create_option     = "Empty"
+	lun               = 0
+	disk_size_gb      = "256"
+	}
 
 	os_profile {
 		computer_name  = "hpc-${lower(var.app_name)}-vm${count.index+1}"
