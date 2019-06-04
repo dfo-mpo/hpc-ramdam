@@ -10,4 +10,5 @@
 
 hosts
 ansible.hosts
+*.retry
 *.key
